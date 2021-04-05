@@ -5,7 +5,12 @@ int main() {
 
   bool all_tests_passed = true;
 
-  const std::string orig =
+//
+// Note: this file (test.cpp) must be encoded in UTF-8
+// for the following test, otherwise, the test item
+// fails.
+//
+   const std::string orig =
     "René Nyffenegger\n"
     "http://www.renenyffenegger.ch\n"
     "passion for data\n";
@@ -148,6 +153,73 @@ int main() {
         all_tests_passed = false;
     }
 
+    std::string numbers =
+        "one two three four five six seven eight nine ten eleven twelve "
+        "thirteen fourteen fivteen sixteen seventeen eighteen nineteen "
+        "twenty twenty-one";
+    std::string encoded_mime = base64_encode_mime(numbers);
+
+    std::string encoded_mime_expeced =
+         "b25lIHR3byB0aHJlZSBmb3VyIGZpdmUgc2l4IHNldmVuIGVpZ2h0IG5pbmUgdGVuIGVsZXZlbiB0\n"
+         "d2VsdmUgdGhpcnRlZW4gZm91cnRlZW4gZml2dGVlbiBzaXh0ZWVuIHNldmVudGVlbiBlaWdodGVl\n"
+         "biBuaW5ldGVlbiB0d2VudHkgdHdlbnR5LW9uZQ==";
+
+    if (encoded_mime != encoded_mime_expeced) {
+        std::cout << "Failed: base64_encode_mime s_6364_encoded" << std::endl;
+        all_tests_passed = false;
+    }
+
+ //
+ // Set 2nd parameter remove_linebreaks to true in order decode a
+ // mime encoded string:
+ //
+    std::string decoded_mime = base64_decode(encoded_mime, true);
+
+    if (decoded_mime != numbers) {
+        std::cout << "Failed: base64_decode(..., true)" << std::endl;
+        all_tests_passed = false;
+    }
+
+ // ----------------------------------------------
+
+    std::string unpadded_input   = "YWJjZGVmZw"; // Note the 'missing' "=="
+    std::string unpadded_decoded = base64_decode(unpadded_input);
+    if (unpadded_decoded != "abcdefg") {
+        std::cout << "Failed to decode unpadded input " << unpadded_input << std::endl;
+        all_tests_passed = false;
+    }
+
+    unpadded_input   = "YWJjZGU"; // Note the 'missing' "="
+    unpadded_decoded = base64_decode(unpadded_input);
+    if (unpadded_decoded != "abcde") {
+        std::cout << "Failed to decode unpadded input " << unpadded_input << std::endl;
+        std::cout << unpadded_decoded << std::endl;
+        all_tests_passed = false;
+    }
+
+    unpadded_input   = "";
+    unpadded_decoded = base64_decode(unpadded_input);
+    if (unpadded_decoded != "") {
+        std::cout << "Failed to decode unpadded input " << unpadded_input << std::endl;
+        std::cout << unpadded_decoded << std::endl;
+        all_tests_passed = false;
+    }
+
+    unpadded_input   = "YQ";
+    unpadded_decoded = base64_decode(unpadded_input);
+    if (unpadded_decoded != "a") {
+        std::cout << "Failed to decode unpadded input " << unpadded_input << std::endl;
+        std::cout << unpadded_decoded << std::endl;
+        all_tests_passed = false;
+    }
+
+    unpadded_input   = "YWI";
+    unpadded_decoded = base64_decode(unpadded_input);
+    if (unpadded_decoded != "ab") {
+        std::cout << "Failed to decode unpadded input " << unpadded_input << std::endl;
+        std::cout << unpadded_decoded << std::endl;
+        all_tests_passed = false;
+    }
 
  // --------------------------------------------------------------
 
